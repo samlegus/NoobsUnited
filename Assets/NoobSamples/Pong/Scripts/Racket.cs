@@ -22,7 +22,7 @@ public class Racket : NoobScript
 	//Any code written inside of Start will be called once when the object is created.
 	void Start()
 	{
-		
+
 	}
 	
 	//Any code written instead of Update will be called every time the application updates
