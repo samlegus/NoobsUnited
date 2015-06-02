@@ -25,7 +25,7 @@ public class NoobScriptTemplate : NoobScript
 	//Any code written instead of Update will be called every time the application updates
 	void Update()
 	{
-		Debug.Log ("Hello World!");
+	
 	}
 	
 	//Any code written inside of OnCollisionEnter2D will be called when this 2D object collides with another
