@@ -19,7 +19,8 @@ using System;
 public class NoobScriptCreationWindow : EditorWindow
 {
 	string scriptName = "";
-
+	bool autoFormatScript;
+	
 	[MenuItem("Assets/Create/New Noob Script")]
 	private static void CreateNewNoobScript()
 	{
@@ -39,8 +40,10 @@ public class NoobScriptCreationWindow : EditorWindow
 	{
 		GUILayout.Label ("* Name should have LETTERS ONLY. No spaces, numbers or symbols.");
 		GUILayout.Label ("* It is recommended to camel case your script name, ex : playerHealth ");
+
 		scriptName = EditorGUILayout.TextField ("Script name:", scriptName);
-		
+		autoFormatScript = EditorGUILayout.Toggle("Auto-Formmated", autoFormatScript);
+
 		if(GUILayout.Button ("Create"))			
 		{
 			bool scriptNameIsValid = true;
@@ -72,7 +75,17 @@ public class NoobScriptCreationWindow : EditorWindow
 					selectedObjectFilePath = trimmedAppDataPath + AssetDatabase.GetAssetPath(selectedObject.GetInstanceID());
 				}
 
-				string sourceFilePath = Application.dataPath + "/NoobsUnited/CoreAssets/NoobScriptTemplate.cs";
+				string sourceFilePath = "";
+
+				if(autoFormatScript)
+				{
+					sourceFilePath = Application.dataPath + "/NoobsUnited/CoreAssets/NoobScriptTemplate.cs";
+				}
+				if(!autoFormatScript)
+				{
+					sourceFilePath = Application.dataPath + "/NoobsUnited/CoreAssets/NoobScriptTemplateMinimal.cs";
+				}
+
 				string newFilePath = "";
 				
 				if(selectedObjectFilePath.Length > 0)
@@ -130,6 +143,7 @@ public class NoobScriptCreationWindow : EditorWindow
 				AssetDatabase.Refresh ();
 			}
 		}
+
 	}
 	
 }
