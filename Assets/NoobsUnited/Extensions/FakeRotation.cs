@@ -16,54 +16,57 @@ using System.Collections;
 //GameObject class Documentation: http://docs.unity3d.com/ScriptReference/GameObject.html
 //Unity Extension Methods Tutorial: https://unity3d.com/learn/tutorials/modules/intermediate/scripting/extension-methods
 
-
-public static partial class NoobExtensions
+namespace NoobsUnited
 {
-	public static void FlipHorizontal(this GameObject gameObj)
+	public static partial class NoobExtensions
 	{
-		Vector2 originalScale = gameObj.transform.localScale;
-		Vector2 flippedScale = new Vector2(originalScale.x * -1f, originalScale.y);
+		public static void FlipHorizontal(this GameObject gameObj)
+		{
+			Vector2 originalScale = gameObj.transform.localScale;
+			Vector2 flippedScale = new Vector2(originalScale.x * -1f, originalScale.y);
+			
+			gameObj.transform.localScale = flippedScale;
+		}
 		
-		gameObj.transform.localScale = flippedScale;
-	}
-	
-	public static void FlipVertical(this GameObject gameObj)
-	{
-		Vector2 originalScale = gameObj.transform.localScale;
-		Vector2 flippedScale = new Vector2(originalScale.x , originalScale.y * -1f);
+		public static void FlipVertical(this GameObject gameObj)
+		{
+			Vector2 originalScale = gameObj.transform.localScale;
+			Vector2 flippedScale = new Vector2(originalScale.x , originalScale.y * -1f);
+			
+			gameObj.transform.localScale = flippedScale;
+		}
 		
-		gameObj.transform.localScale = flippedScale;
-	}
-	
-	public static void LookLeft(this GameObject gameObj)
-	{
-		Vector2 originalScale = gameObj.transform.localScale;
-		Vector2 faceLeftScale = new Vector2( Mathf.Abs(originalScale.x) * -1, originalScale.y);
+		public static void LookLeft(this GameObject gameObj)
+		{
+			Vector2 originalScale = gameObj.transform.localScale;
+			Vector2 faceLeftScale = new Vector2( Mathf.Abs(originalScale.x) * -1, originalScale.y);
+			
+			gameObj.transform.localScale = faceLeftScale;
+		}
 		
-		gameObj.transform.localScale = faceLeftScale;
-	}
-	
-	public static void LookRight(this GameObject gameObj)
-	{
-		Vector2 originalScale = gameObj.transform.localScale;
-		Vector2 faceLeftScale = new Vector2( Mathf.Abs(originalScale.x), originalScale.y);
+		public static void LookRight(this GameObject gameObj)
+		{
+			Vector2 originalScale = gameObj.transform.localScale;
+			Vector2 faceLeftScale = new Vector2( Mathf.Abs(originalScale.x), originalScale.y);
+			
+			gameObj.transform.localScale = faceLeftScale;  
+		}
 		
-		gameObj.transform.localScale = faceLeftScale;  
-	}
-	
-	public static void LookUp(this GameObject gameObj)
-	{
-		Vector2 originalScale = gameObj.transform.localScale;
-		Vector2 faceLeftScale = new Vector2( originalScale.x, Mathf.Abs (originalScale.y));
+		public static void LookUp(this GameObject gameObj)
+		{
+			Vector2 originalScale = gameObj.transform.localScale;
+			Vector2 faceLeftScale = new Vector2( originalScale.x, Mathf.Abs (originalScale.y));
+			
+			gameObj.transform.localScale = faceLeftScale;
+		}
 		
-		gameObj.transform.localScale = faceLeftScale;
-	}
-	
-	public static void LookDown(this GameObject gameObj)
-	{
-		Vector2 originalScale = gameObj.transform.localScale;
-		Vector2 faceLeftScale = new Vector2(originalScale.x, Mathf.Abs (originalScale.y) * -1f);
-		
-		gameObj.transform.localScale = faceLeftScale;
+		public static void LookDown(this GameObject gameObj)
+		{
+			Vector2 originalScale = gameObj.transform.localScale;
+			Vector2 faceLeftScale = new Vector2(originalScale.x, Mathf.Abs (originalScale.y) * -1f);
+			
+			gameObj.transform.localScale = faceLeftScale;
+		}
 	}
 }
+

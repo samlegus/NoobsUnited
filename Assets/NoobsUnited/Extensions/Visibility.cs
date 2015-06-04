@@ -15,67 +15,69 @@ using System.Collections;
 //Renderer class Documentation: http://docs.unity3d.com/ScriptReference/Renderer.html
 //Unity Extension Methods Tutorial: https://unity3d.com/learn/tutorials/modules/intermediate/scripting/extension-methods
 
-
-public static partial class NoobExtensions
+namespace NoobsUnited
 {
-	public static void ToggleVisibility(this GameObject gameObj)
+	public static partial class NoobExtensions
 	{
-		Renderer ourRenderer = gameObj.GetComponent<Renderer>();
-		if(ourRenderer != null)
+		public static void ToggleVisibility(this GameObject gameObj)
 		{
-			bool isVisible = ourRenderer.enabled;
-			ourRenderer.enabled = !isVisible;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no renderer component! Cannot toggle visibility");
-		}
-	}
-	
-	public static void Show(this GameObject gameObj)
-	{
-		Renderer ourRenderer = gameObj.GetComponent<Renderer>();
-		if(ourRenderer != null)
-		{
-			ourRenderer.enabled = true;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no renderer component! Cannot enable visibility");
-		}
-	}
-	
-	public static void Hide(this GameObject gameObj)
-	{
-		Renderer ourRenderer = gameObj.GetComponent<Renderer>();
-		if(ourRenderer != null)
-		{
-			ourRenderer.enabled = false;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no renderer component! Cannot disable visibility");
-		}
-	}
-	
-	public static bool IsVisibleOnScreen(this GameObject gameObj)
-	{
-		Renderer ourRenderer = gameObj.GetComponent<Renderer>();
-		if(ourRenderer != null)
-		{
-			if(ourRenderer.isVisible)
+			Renderer ourRenderer = gameObj.GetComponent<Renderer>();
+			if(ourRenderer != null)
 			{
-				return true;
+				bool isVisible = ourRenderer.enabled;
+				ourRenderer.enabled = !isVisible;
 			}
 			else
 			{
-				return false;
+				Debug.Log (gameObj.name + " has no renderer component! Cannot toggle visibility");
 			}
 		}
-		else
-		{	
-			Debug.Log (gameObj.name + " has no renderer component! Cannot obtain visibility status");
-			return false;
+		
+		public static void Show(this GameObject gameObj)
+		{
+			Renderer ourRenderer = gameObj.GetComponent<Renderer>();
+			if(ourRenderer != null)
+			{
+				ourRenderer.enabled = true;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no renderer component! Cannot enable visibility");
+			}
+		}
+		
+		public static void Hide(this GameObject gameObj)
+		{
+			Renderer ourRenderer = gameObj.GetComponent<Renderer>();
+			if(ourRenderer != null)
+			{
+				ourRenderer.enabled = false;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no renderer component! Cannot disable visibility");
+			}
+		}
+		
+		public static bool IsVisibleOnScreen(this GameObject gameObj)
+		{
+			Renderer ourRenderer = gameObj.GetComponent<Renderer>();
+			if(ourRenderer != null)
+			{
+				if(ourRenderer.isVisible)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{	
+				Debug.Log (gameObj.name + " has no renderer component! Cannot obtain visibility status");
+				return false;
+			}
 		}
 	}
 }

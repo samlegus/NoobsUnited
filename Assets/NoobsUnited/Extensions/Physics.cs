@@ -17,126 +17,128 @@ using System.Collections;
 //Rigidbody class Documentation: http://docs.unity3d.com/ScriptReference/Rigidbody2D.html
 //Unity Extension Methods Tutorial: https://unity3d.com/learn/tutorials/modules/intermediate/scripting/extension-methods
 
-public static partial class NoobExtensions
+namespace NoobsUnited
 {
-	
-	//Sets an object's velocity to zero.
-	public static void StopMotion(this GameObject gameObj)
+	public static partial class NoobExtensions
 	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
+		
+		//Sets an object's velocity to zero.
+		public static void StopMotion(this GameObject gameObj)
 		{
-			ourRigidbody.velocity = Vector2.zero;
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				ourRigidbody.velocity = Vector2.zero;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			}
 		}
-		else
+		
+		//Sets an object's velocity using two floats
+		public static void SetVelocity(this GameObject gameObj, float x, float y)
 		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				Vector2 newVelocity = new Vector2(x,y);
+				ourRigidbody.velocity = newVelocity;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			}
 		}
-	}
-	
-	//Sets an object's velocity using two floats
-	public static void SetVelocity(this GameObject gameObj, float x, float y)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
+		
+		//Sets an object's velocity using a Vector2
+		public static void SetVelocity(this GameObject gameObj, Vector2 newVelocity)
 		{
-			Vector2 newVelocity = new Vector2(x,y);
-			ourRigidbody.velocity = newVelocity;
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				ourRigidbody.velocity = newVelocity;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			}
 		}
-		else
+		
+		//Sets an objects horizontal velocity
+		public static void SetVelocityX(this GameObject gameObj, float x)
 		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				Vector2 oldVelocity = ourRigidbody.velocity;
+				Vector2 newVelocity = new Vector2(x, oldVelocity.y);
+				ourRigidbody.velocity = newVelocity;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			}
 		}
-	}
-	
-	//Sets an object's velocity using a Vector2
-	public static void SetVelocity(this GameObject gameObj, Vector2 newVelocity)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
+		
+		//Sets an objects vertical velocity
+		public static void SetVelocityY(this GameObject gameObj, float y)
 		{
-			ourRigidbody.velocity = newVelocity;
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				Vector2 oldVelocity = ourRigidbody.velocity;
+				Vector2 newVelocity = new Vector2(oldVelocity.x, y);
+				ourRigidbody.velocity = newVelocity;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			}
 		}
-		else
+		
+		public static float GetDirectionX(this GameObject gameObj)
 		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				return ourRigidbody.velocity.normalized.x;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+				return 0f;
+			}
 		}
-	}
-	
-	//Sets an objects horizontal velocity
-	public static void SetVelocityX(this GameObject gameObj, float x)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
+		
+		public static float GetDirectionY(this GameObject gameObj)
 		{
-			Vector2 oldVelocity = ourRigidbody.velocity;
-			Vector2 newVelocity = new Vector2(x, oldVelocity.y);
-			ourRigidbody.velocity = newVelocity;
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				return ourRigidbody.velocity.normalized.y;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+				return 0f;
+			}
 		}
-		else
+		
+		public static Vector2 GetDirection(this GameObject gameObj)
 		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				return ourRigidbody.velocity.normalized;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
+				return Vector2.zero;
+			}
 		}
-	}
-	
-	//Sets an objects vertical velocity
-	public static void SetVelocityY(this GameObject gameObj, float y)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
-		{
-			Vector2 oldVelocity = ourRigidbody.velocity;
-			Vector2 newVelocity = new Vector2(oldVelocity.x, y);
-			ourRigidbody.velocity = newVelocity;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
-		}
-	}
-	
-	public static float GetDirectionX(this GameObject gameObj)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
-		{
-			return ourRigidbody.velocity.normalized.x;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
-			return 0f;
-		}
-	}
-	
-	public static float GetDirectionY(this GameObject gameObj)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
-		{
-			return ourRigidbody.velocity.normalized.y;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
-			return 0f;
-		}
-	}
-	
-	public static Vector2 GetDirection(this GameObject gameObj)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
-		{
-			return ourRigidbody.velocity.normalized;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Velocity not accessible.");
-			return Vector2.zero;
-		}
-	}
-	/*
+		/*
 	//Returns the x velocity of an object
 	public static float GetVelocityX(this GameObject gameObj)
 	{
@@ -183,84 +185,85 @@ public static partial class NoobExtensions
 		}
 	}
 	*/
-	
-	
-	//Toggles the sleep mode of an object's Rigidbody2D
-	public static void TogglePhysics(this GameObject gameObj)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
+		
+		
+		//Toggles the sleep mode of an object's Rigidbody2D
+		public static void TogglePhysics(this GameObject gameObj)
 		{
-			if( ourRigidbody.IsSleeping () == false)
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
+				if( ourRigidbody.IsSleeping () == false)
+				{
+					ourRigidbody.Sleep ();
+				}
+				else
+				{
+					ourRigidbody.WakeUp ();
+				}
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Cannot disable physics.");
+			}
+		}
+		
+		//Puts the object's Rigidbody2D to sleep
+		public static void DisablePhysics(this GameObject gameObj)
+		{
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
 			{
 				ourRigidbody.Sleep ();
 			}
 			else
 			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Cannot disable physics.");
+			}
+			
+		}
+		
+		//Wakes up an object's Rigidbody2D
+		public static void EnablePhysics(this GameObject gameObj)
+		{
+			Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
+			if(ourRigidbody != null)
+			{
 				ourRigidbody.WakeUp ();
 			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Rigidbody2D component! Cannot enable physics.");
+			}
 		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Cannot disable physics.");
+		
+		public static float GetColliderWidth(this GameObject gameObj)
+		{	
+			Collider2D ourCollider = gameObj.GetComponent<Collider2D>();
+			if(ourCollider != null)
+			{
+				return ourCollider.bounds.size.x;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Collider2D component! Cannot obtain collider width.");
+				return 0f;
+			}
 		}
-	}
-	
-	//Puts the object's Rigidbody2D to sleep
-	public static void DisablePhysics(this GameObject gameObj)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
-		{
-			ourRigidbody.Sleep ();
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Cannot disable physics.");
+		
+		public static float GetColliderHeight(this GameObject gameObj)
+		{	
+			Collider2D ourCollider = gameObj.GetComponent<Collider2D>();
+			if(ourCollider != null)
+			{
+				return ourCollider.bounds.size.y;
+			}
+			else
+			{
+				Debug.Log (gameObj.name + " has no Collider2D component! Cannot obtain collider height.");
+				return 0f;
+			}
 		}
 		
 	}
-	
-	//Wakes up an object's Rigidbody2D
-	public static void EnablePhysics(this GameObject gameObj)
-	{
-		Rigidbody2D ourRigidbody = gameObj.GetComponent<Rigidbody2D>();
-		if(ourRigidbody != null)
-		{
-			ourRigidbody.WakeUp ();
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Rigidbody2D component! Cannot enable physics.");
-		}
-	}
-	
-	public static float GetColliderWidth(this GameObject gameObj)
-	{	
-		Collider2D ourCollider = gameObj.GetComponent<Collider2D>();
-		if(ourCollider != null)
-		{
-			return ourCollider.bounds.size.x;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Collider2D component! Cannot obtain collider width.");
-			return 0f;
-		}
-	}
-	
-	public static float GetColliderHeight(this GameObject gameObj)
-	{	
-		Collider2D ourCollider = gameObj.GetComponent<Collider2D>();
-		if(ourCollider != null)
-		{
-			return ourCollider.bounds.size.y;
-		}
-		else
-		{
-			Debug.Log (gameObj.name + " has no Collider2D component! Cannot obtain collider height.");
-			return 0f;
-		}
-	}
-	
 }

@@ -16,61 +16,62 @@ using System.Collections;
 //Unity Extension Methods Tutorial: https://unity3d.com/learn/tutorials/modules/intermediate/scripting/extension-methods
 
 //TODO: Common Quaternion rotation functions
-
-public static partial class NoobExtensions
+namespace NoobsUnited
 {
-	//Solution from: http://answers.unity3d.com/questions/585035/lookat-2d-equivalent-.html
-	//Wouldn't wanna use this in combination with the scale facing functions.
-	//Still, this is here for future use.
-	
-	//TODO: Find that other more awesome solution to avoid the Atan2 function call.
-	
-	//Makes an object face another
-	public static void LookAt2D(this GameObject gameObj, GameObject target)
+	public static partial class NoobExtensions
 	{
-		Vector2 ourPosition = gameObj.transform.position;
-		Vector2 lookPosition = target.transform.position;
-		Vector2 difference = lookPosition - ourPosition;
+		//Solution from: http://answers.unity3d.com/questions/585035/lookat-2d-equivalent-.html
+		//Wouldn't wanna use this in combination with the scale facing functions.
+		//Still, this is here for future use.
 		
-		difference.Normalize();
+		//TODO: Find that other more awesome solution to avoid the Atan2 function call.
 		
-		float zRotation = Mathf.Atan2(difference.y, difference.x);
-		float zRotationDegrees = zRotation * Mathf.Rad2Deg;
+		//Makes an object face another
+		public static void LookAt2D(this GameObject gameObj, GameObject target)
+		{
+			Vector2 ourPosition = gameObj.transform.position;
+			Vector2 lookPosition = target.transform.position;
+			Vector2 difference = lookPosition - ourPosition;
+			
+			difference.Normalize();
+			
+			float zRotation = Mathf.Atan2(difference.y, difference.x);
+			float zRotationDegrees = zRotation * Mathf.Rad2Deg;
+			
+			gameObj.transform.rotation = Quaternion.Euler(0f, 0f, zRotationDegrees - 90);
+		}
 		
-		gameObj.transform.rotation = Quaternion.Euler(0f, 0f, zRotationDegrees - 90);
-	}
-	
-	//Makes an object face another
-	public static void LookAt2D(this GameObject gameObj, float x, float y)
-	{
-		Vector2 ourPosition = gameObj.transform.position;
-		Vector2 lookPosition = new Vector2(x, y);
-		Vector2 difference = lookPosition - ourPosition;
+		//Makes an object face another
+		public static void LookAt2D(this GameObject gameObj, float x, float y)
+		{
+			Vector2 ourPosition = gameObj.transform.position;
+			Vector2 lookPosition = new Vector2(x, y);
+			Vector2 difference = lookPosition - ourPosition;
+			
+			difference.Normalize();
+			
+			float zRotation = Mathf.Atan2(difference.y, difference.x);
+			float zRotationDegrees = zRotation * Mathf.Rad2Deg;
+			
+			gameObj.transform.rotation = Quaternion.Euler(0f, 0f, zRotationDegrees - 90);
+		}
 		
-		difference.Normalize();
+		//Overloaded LookAt2D that takes a Vector2 instead of a GameObject
+		public static void LookAt2D(this GameObject gameObj, Vector2 lookPosition)
+		{
+			Vector2 ourPosition = gameObj.transform.position;
+			Vector2 difference = lookPosition - ourPosition;
+			
+			difference.Normalize();
+			
+			float zRotation = Mathf.Atan2(difference.y, difference.x);
+			float zRotationDegrees = zRotation * Mathf.Rad2Deg;
+			
+			gameObj.transform.rotation = Quaternion.Euler(0f, 0f, zRotationDegrees - 90);
+		}
 		
-		float zRotation = Mathf.Atan2(difference.y, difference.x);
-		float zRotationDegrees = zRotation * Mathf.Rad2Deg;
-		
-		gameObj.transform.rotation = Quaternion.Euler(0f, 0f, zRotationDegrees - 90);
-	}
-	
-	//Overloaded LookAt2D that takes a Vector2 instead of a GameObject
-	public static void LookAt2D(this GameObject gameObj, Vector2 lookPosition)
-	{
-		Vector2 ourPosition = gameObj.transform.position;
-		Vector2 difference = lookPosition - ourPosition;
-		
-		difference.Normalize();
-		
-		float zRotation = Mathf.Atan2(difference.y, difference.x);
-		float zRotationDegrees = zRotation * Mathf.Rad2Deg;
-		
-		gameObj.transform.rotation = Quaternion.Euler(0f, 0f, zRotationDegrees - 90);
-	}
-	
-	// For later maybe. Keep as much crap as possible in gameObject
-	/*
+		// For later maybe. Keep as much crap as possible in gameObject
+		/*
 	
 	//Makes an object's transform face a gameObject
 	public static void LookAt2D(this Transform trans, GameObject target)
@@ -117,6 +118,8 @@ public static partial class NoobExtensions
 	}
 	
 	*/
+		
+	}
 	
 }
 

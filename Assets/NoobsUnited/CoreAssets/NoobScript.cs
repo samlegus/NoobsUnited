@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using NoobsUnited;
 
+
 public class NoobScript : MonoBehaviour 
 {
 	public bool DebugTextInfo = false;

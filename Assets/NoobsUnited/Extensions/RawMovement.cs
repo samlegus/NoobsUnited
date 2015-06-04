@@ -14,49 +14,50 @@ using System.Collections;
 //GameObject class Documentation: http://docs.unity3d.com/ScriptReference/GameObject.html
 //Unity Extension Methods Tutorial: https://unity3d.com/learn/tutorials/modules/intermediate/scripting/extension-methods
 
-
-public static partial class NoobExtensions
+namespace NoobsUnited
 {
-	//the "this GameObject gameObj" is a required paramater for making extensions, it does not show up when an extension method is called
-	//example : the Move function would be called like Move(1f, 2f) - the this GameObject paramater is hidden/ignored
-	
-	//Standard raw movement, effectively replaces transform.translate
-	public static void Move(this GameObject gameObj, float x, float y)
+	public static partial class NoobExtensions
 	{
-		Vector2 translation = new Vector2(x, y) * Time.deltaTime;
-		gameObj.transform.Translate ( translation );
-	}	
-	
-	//Raw movement function that will move the source gameObject towards another gameObject
-	public static void MoveToward(this GameObject gameObj, GameObject target, float speed)
-	{
-		Vector2 ourPosition = gameObj.transform.position;
-		Vector2 targetPosition = target.transform.position;
-		Vector2 newPosition = Vector2.MoveTowards ( ourPosition, targetPosition, speed * Time.deltaTime );
+		//the "this GameObject gameObj" is a required paramater for making extensions, it does not show up when an extension method is called
+		//example : the Move function would be called like Move(1f, 2f) - the this GameObject paramater is hidden/ignored
 		
-		gameObj.transform.position = newPosition;
-	}
-	
-	//Overloaded version of MoveToward that takes two floats instead of a gameObject or a Vector2
-	public static void MoveToward(this GameObject gameObj, float x, float y, float speed)
-	{
-		Vector2 ourPosition = gameObj.transform.position;
-		Vector2 targetPosition = new Vector2(x,y);
-		Vector2 newPosition = Vector2.MoveTowards ( ourPosition, targetPosition, speed * Time.deltaTime );
+		//Standard raw movement, effectively replaces transform.translate
+		public static void Move(this GameObject gameObj, float x, float y)
+		{
+			Vector2 translation = new Vector2(x, y) * Time.deltaTime;
+			gameObj.transform.Translate ( translation );
+		}	
 		
-		gameObj.transform.position = newPosition;
-	}
-	
-	//Overloaded version of MoveToward that takes a Vector2 instead of a game object
-	public static void MoveToward(this GameObject gameObj, Vector2 targetPosition, float speed)
-	{
-		Vector2 ourPosition = gameObj.transform.position;
-		Vector2 newPosition = Vector2.MoveTowards ( ourPosition, targetPosition, speed * Time.deltaTime );
+		//Raw movement function that will move the source gameObject towards another gameObject
+		public static void MoveToward(this GameObject gameObj, GameObject target, float speed)
+		{
+			Vector2 ourPosition = gameObj.transform.position;
+			Vector2 targetPosition = target.transform.position;
+			Vector2 newPosition = Vector2.MoveTowards ( ourPosition, targetPosition, speed * Time.deltaTime );
+			
+			gameObj.transform.position = newPosition;
+		}
 		
-		gameObj.transform.position = newPosition;
-	}
-	
-	/*
+		//Overloaded version of MoveToward that takes two floats instead of a gameObject or a Vector2
+		public static void MoveToward(this GameObject gameObj, float x, float y, float speed)
+		{
+			Vector2 ourPosition = gameObj.transform.position;
+			Vector2 targetPosition = new Vector2(x,y);
+			Vector2 newPosition = Vector2.MoveTowards ( ourPosition, targetPosition, speed * Time.deltaTime );
+			
+			gameObj.transform.position = newPosition;
+		}
+		
+		//Overloaded version of MoveToward that takes a Vector2 instead of a game object
+		public static void MoveToward(this GameObject gameObj, Vector2 targetPosition, float speed)
+		{
+			Vector2 ourPosition = gameObj.transform.position;
+			Vector2 newPosition = Vector2.MoveTowards ( ourPosition, targetPosition, speed * Time.deltaTime );
+			
+			gameObj.transform.position = newPosition;
+		}
+		
+		/*
 	
 	//Finish later
 	//Smooth movement function
@@ -70,24 +71,24 @@ public static partial class NoobExtensions
 	}
 	
 	*/
-	
-	
-	public static void SetPosition(this GameObject gameObj, float x, float y)
-	{
-		gameObj.transform.position = new Vector2(x,y);
-	}
-	
-	public static void SetPositionX(this GameObject gameObj, float x)
-	{
-		gameObj.transform.position = new Vector2(x, gameObj.transform.position.y);
-	}
-	
-	public static void SetPositionY(this GameObject gameObj, float y)
-	{
-		gameObj.transform.position = new Vector2(gameObj.transform.position.x, y);
-	}
-	
-	/*
+		
+		
+		public static void SetPosition(this GameObject gameObj, float x, float y)
+		{
+			gameObj.transform.position = new Vector2(x,y);
+		}
+		
+		public static void SetPositionX(this GameObject gameObj, float x)
+		{
+			gameObj.transform.position = new Vector2(x, gameObj.transform.position.y);
+		}
+		
+		public static void SetPositionY(this GameObject gameObj, float y)
+		{
+			gameObj.transform.position = new Vector2(gameObj.transform.position.x, y);
+		}
+		
+		/*
 	
 	//Don't want this coming up in the auto complete drop down and confusing newbies.
 	
@@ -97,15 +98,17 @@ public static partial class NoobExtensions
 	}
 	
 	*/
-	
-	
-	public static float GetPositionX(this GameObject gameObj)
-	{
-		return gameObj.transform.position.x;
+		
+		
+		public static float GetPositionX(this GameObject gameObj)
+		{
+			return gameObj.transform.position.x;
+		}
+		
+		public static float GetPositionY(this GameObject gameObj)
+		{
+			return gameObj.transform.position.y;
+		}
 	}
 	
-	public static float GetPositionY(this GameObject gameObj)
-	{
-		return gameObj.transform.position.y;
-	}
 }

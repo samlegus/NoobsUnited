@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using NoobsUnited;
 
 public class WinLose : NoobScript
 {
