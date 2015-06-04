@@ -1,38 +1,61 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
 using System;
 
-public class MonoBehaviourCreationWizard : EditorWindow
+
+public partial class MonoBehaviourCreationWizard : EditorWindow
 {
-	string scriptName = "";
-	string scriptFilePath = "";
+	static string scriptName = "";
+	static string scriptDirectoryPath = "";
+	static string scriptFullFilePath = "";
 	
-	bool noobScriptMode = false;
-	bool monoBehaviourMode = true;
+	static bool noobScriptMode = false;
+	static bool monoBehaviourMode = true;
+	static bool openScriptAfterCreation = true;
 	
-	Dictionary<string, bool> includedFunctions = new Dictionary<string, bool>();
-	Dictionary<string, string[]> functionDefinitions = new Dictionary<string, string[]>();
+	static Dictionary<string, bool> includedFunctions = new Dictionary<string, bool>();
+	static Dictionary<string, string[]> functionDefinitions = new Dictionary<string, string[]>();
 	
 	static UnityEngine.Object selectedObject;
-	
-	[MenuItem("Assets/Create/C# Script Creation Wizard")]
-	private static void CreateNewMonoBehaviour()
+	static string defaultScriptDirectory = "Assets/MyGame/Scripts";
+
+	private static MonoBehaviourCreationWizard window
 	{
-		
-		var window = EditorWindow.GetWindow<MonoBehaviourCreationWizard>();
+		get { return EditorWindow.GetWindow<MonoBehaviourCreationWizard>();}
+	}
+
+	[MenuItem("Assets/Create/C# Script Creation Wizard")]
+	private static void OpenMonoWizardFromContextMenu()
+	{
+
 		window.position = new Rect(100, 100, 450, 450);
 		window.ShowPopup ();
 		selectedObject = Selection.activeObject;
+		SetFilePathFromContextMenu();
 	}
-	
-	//To fix the two column layout issue
+
 	[MenuItem("Assets/Create/C# Script Creation Wizard", true)]
-	private static bool ValidateNewNoobScript()
+	private static bool ValidateMonoWizardFromContextMenu()
 	{
 		return Selection.activeObject != null;
+	}
+
+	[MenuItem("Noobs United/C# Script Creation Wizard")]
+	private static void CreateNewMonoBehaviourFromMenuBar()
+	{
+		var window = EditorWindow.GetWindow<MonoBehaviourCreationWizard>();
+		window.position = new Rect(100, 100, 450, 450);
+		window.ShowPopup ();
+		AssetDatabase.Refresh ();
+		SetFilePathFromMenuBar();
+	}
+
+	[MenuItem("Noobs United/C# Script Creation Wizard", true)]
+	private static bool ValidateMonoWizardFromMenuBar()
+	{
+		return Directory.Exists (defaultScriptDirectory);
 	}
 	
 	void OnGUI()
@@ -68,30 +91,21 @@ public class MonoBehaviourCreationWizard : EditorWindow
 				                             "Okay");
 				return;
 			}
-			else
+
+			scriptFullFilePath = scriptDirectoryPath + "/" + scriptName + ".cs";
+
+			if(File.Exists (scriptFullFilePath))
 			{
-				
-				//The highlighted or selected folder/file in the project window
-				if(Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
-				{
-					scriptFilePath = AssetDatabase.GetAssetPath (selectedObject);
-					scriptFilePath = scriptFilePath + "/" + scriptName + ".cs";
-				}
-				else if(AssetDatabase.GetAssetPath (selectedObject) != null && !Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
-				{
-					scriptFilePath = AssetDatabase.GetAssetPath (selectedObject);
-					scriptFilePath = scriptFilePath.Substring (0, scriptFilePath.LastIndexOf ("/") + 1);
-					scriptFilePath = scriptFilePath + scriptName + ".cs";
-				}
-				else
-				{
-					scriptFilePath = Application.dataPath;
-				}
-				
-				WriteScript ();
-				OpenScript ();
-				FinishScriptCreation ();
+				EditorUtility.DisplayDialog ("Script already exists",
+				                             scriptName + ".cs" + " already exists, please choose a different script name.",
+				                             "Okay");
+				return;
 			}
+
+			WriteScript ();
+			OpenScript ();
+			FinishScriptCreation ();
+
 		}
 		
 		GUILayout.Label("* Generate empty definitions for these events: ");
@@ -101,9 +115,12 @@ public class MonoBehaviourCreationWizard : EditorWindow
 		includedFunctions["Update"] = EditorGUILayout.Toggle ("Update", includedFunctions["Update"]);
 		includedFunctions["OnCollisionEnter2D"] = EditorGUILayout.Toggle ("OnCollisionEnter2D", includedFunctions["OnCollisionEnter2D"]);
 		includedFunctions["OnTriggerEnter2D"] = EditorGUILayout.Toggle ("OnTriggerEnter2D", includedFunctions["OnTriggerEnter2D"]);
+		GUILayout.Label("* Other Options");
+		EditorGUILayout.Toggle ("Open script after creation", openScriptAfterCreation);
+
 	}
 	
-	void InitializeFunctionEntryTable()
+	static void InitializeFunctionEntryTable()
 	{
 		if(includedFunctions.Count > 0)
 		{
@@ -119,7 +136,7 @@ public class MonoBehaviourCreationWizard : EditorWindow
 		includedFunctions.Add ("OnTriggerEnter2D", false);
 	}
 	
-	void InitializeFunctionDefinitionTable()
+	static void InitializeFunctionDefinitionTable()
 	{
 		if(functionDefinitions.Count > 0)
 		{
@@ -127,17 +144,37 @@ public class MonoBehaviourCreationWizard : EditorWindow
 		}
 		
 		functionDefinitions.Add ("Awake", 	new string[]	{"\tvoid Awake()",	"\t{",	"", "\t}"	});
-		functionDefinitions.Add ("FixedUpdate", new string[]	{"\tvoid FixedUpdate()",	"\t{", 	"",	"\t}"	});
 		functionDefinitions.Add ("Start", 	new string[]	{"\tvoid Start()",	"\t{", 	"",	"\t}"	});
+		functionDefinitions.Add ("FixedUpdate", new string[]	{"\tvoid FixedUpdate()",	"\t{", 	"",	"\t}"	});
 		functionDefinitions.Add ("Update", 	new string[]	{"\tvoid Update()", "\t{", 	"",	"\t}"	});
 		functionDefinitions.Add ("OnCollisionEnter2D", new String[] {"\tvoid OnCollisionEnter2D(Collision2D other)", "\t{",	"", "\t}"});
 		functionDefinitions.Add ("OnTriggerEnter2D", new String[] {"\tvoid OnTriggerEnter2D(Collider2D other)", "\t{",	"", "\t}"});
 		
 	}
-	
-	void WriteScript()
+
+	static void SetFilePathFromMenuBar()
 	{
-		StreamWriter sw = new StreamWriter(scriptFilePath);
+
+		scriptDirectoryPath = defaultScriptDirectory;
+	}
+
+	static void SetFilePathFromContextMenu()
+	{
+		//The highlighted or selected folder/file in the project window
+		if(Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
+		{
+			scriptDirectoryPath = AssetDatabase.GetAssetPath (selectedObject);
+		}
+		else if(AssetDatabase.GetAssetPath (selectedObject) != null && !Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
+		{
+			scriptDirectoryPath = AssetDatabase.GetAssetPath (selectedObject);
+			scriptDirectoryPath = scriptDirectoryPath.Substring (0, scriptDirectoryPath.LastIndexOf ("/") + 1);
+		}
+	}
+	
+	static void WriteScript()
+	{
+		StreamWriter sw = new StreamWriter(scriptFullFilePath);
 		
 		sw.WriteLine ("using UnityEngine;");
 		sw.WriteLine ("using UnityEngine.UI;");
@@ -145,7 +182,7 @@ public class MonoBehaviourCreationWizard : EditorWindow
 		
 		if(noobScriptMode)
 		{
-			sw.WriteLine("using NoobsUnited");
+			sw.WriteLine("using NoobsUnited;");
 		}
 		
 		sw.WriteLine ("");
@@ -160,7 +197,7 @@ public class MonoBehaviourCreationWizard : EditorWindow
 		}
 		
 		sw.WriteLine ("{");
-		//sw.WriteLine ("");
+		sw.WriteLine();
 		
 		foreach(KeyValuePair <string, bool> kp in includedFunctions)
 		{
@@ -170,26 +207,33 @@ public class MonoBehaviourCreationWizard : EditorWindow
 				{
 					sw.WriteLine(line);	
 				}
+				sw.WriteLine ();
 			}
-			//sw.WriteLine ("");
 		}
 		
 		sw.WriteLine ("}");
 		sw.Close();
 	}
 	
-	void FinishScriptCreation()
+	static void FinishScriptCreation()
 	{
 		scriptName = "";
-		scriptFilePath = "";
-		selectedObject = null;
-		this.Close();
+		scriptDirectoryPath = "";
+		scriptFullFilePath = "";
+
+		if(selectedObject != null)
+		{
+			selectedObject = null;
+		}
+
+		window.Close ();
 	}
 	
-	void OpenScript()
+	static void OpenScript()
 	{
 		AssetDatabase.Refresh ();
-		MonoScript script = AssetDatabase.LoadAssetAtPath (scriptFilePath, typeof(MonoScript)) as MonoScript;
+		MonoScript script = AssetDatabase.LoadAssetAtPath (scriptFullFilePath, typeof(MonoScript)) as MonoScript;
+		Selection.activeObject = script;
 		AssetDatabase.OpenAsset (script);
 	}
 	
