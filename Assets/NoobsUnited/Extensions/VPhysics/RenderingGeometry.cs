@@ -87,6 +87,12 @@ namespace NoobsUnited
 			Color prevColor = Gizmos.color;
 			Gizmos.color = color;
 			Gizmos.DrawWireCube(origin, size);
+			
+			foreach(Vector3 point in contactPoints)
+			{
+				Gizmos.color = contactPointColor;
+				Gizmos.DrawWireSphere (point, contactPointSphereRadius);
+			}
 			Gizmos.color = prevColor;
 		}
 	}
