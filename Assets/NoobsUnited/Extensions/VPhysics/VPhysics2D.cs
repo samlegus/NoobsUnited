@@ -1,45 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using NoobsUnited.Swizzle;
+using NoobsUnited;
 
 namespace UnityEngine
 {
-	public class CircleGeometry
+	public partial class VPhysics2D : MonoBehaviour
 	{
-		public CircleGeometry(Vector2 origin, float radius, Vector2 direction) //, float distance = Mathf.Infinity)
-		{
-			this.origin = origin;
-			this.radius = radius;
-			this.direction = direction;
-			//this.distance = distance;
-			this.contactPoints = new List<Vector2>();
-		}
-		
-		public Vector2 origin { get; set;}
-		public float radius {get; set;}
-		public Vector2 direction {get; set;}
-		//public float distance {get; set;}
-		public List<Vector2> contactPoints;
-	}
-	
-	public class VPhysics2D : MonoBehaviour
-	{
-		#region Geometry Rendering classes
-		
-		public static int _maxShapeDrawsPerCast = 40;
-		public static bool _renderGeometry = true;
-		public static float _contactPointRenderScale = .25f;
-		
-		#endregion
-		
 		#region Inspector
+		
+		//public static int maxShapeDrawsPerCast = 40;
+		public static float maxShapeCastDistance = 1000f;
+		public static bool renderGeometry = true;
+		public static float contactPointRenderScale = .25f;
 		
 		#endregion
 		
 		#region Private Variables
 		
-		private static List<CircleGeometry> _circleGeometry = new List<CircleGeometry>();
+		private static List<ShapecastGeometry> _geometry = new List<ShapecastGeometry>();
+		
 		private static bool _renderingCycleStarted = false;
 		private static Color _shapeCastColor = Color.white;
 		private static Color _hitPointColor = Color.yellow;
@@ -48,6 +28,17 @@ namespace UnityEngine
 		#endregion
 		
 		#region Unity Events
+		
+		void Test()
+		{
+			Debug.Log("Test!");
+		}
+		
+		void Awake()
+		{
+			
+		}
+		
 		
 		void OnGUI()
 		{
@@ -61,25 +52,28 @@ namespace UnityEngine
 				StartCoroutine(DestroyGeometry());
 			}
 			
-			if(_renderGeometry)
+			if(renderGeometry)
 			{
-				foreach(CircleGeometry circ in _circleGeometry)
+				foreach(ShapecastGeometry shape in _geometry)
 				{
-					//Draw CircleCasts
-					Gizmos.color = _shapeCastColor;
-					Gizmos.DrawWireSphere (circ.origin, circ.radius);
-					
-					//Draw the contact points for each valid RaycastHit2D
-					Gizmos.color = _hitPointColor;
-					foreach(Vector3 point in circ.contactPoints)
-					{
-						Gizmos.DrawWireSphere(point, circ.radius * _contactPointRenderScale );
-					}
-					
-					//Draw CircleCast direction indicators
-					Gizmos.color = _shapeCastDirectionColor;
-					Gizmos.DrawLine(circ.origin, circ.origin + (circ.direction * circ.radius / 2f));
-					Gizmos.DrawCube(circ.origin, Vector3.one * circ.radius * (_contactPointRenderScale / 2f));
+					shape.Render ();
+//					//Draw CircleCasts
+//					Gizmos.color = _shapeCastColor;
+//					Gizmos.DrawWireSphere (circ.origin, circ.radius);
+//					
+//					//Draw the contact points for each valid RaycastHit2D
+//					Gizmos.color = _hitPointColor;
+//					foreach(Vector3 point in circ.contactPoints)
+//					{
+//						Gizmos.DrawWireSphere(point, circ.radius * contactPointRenderScale );
+//					}
+//					
+//					//Draw CircleCast direction indicators
+//					Gizmos.color = _shapeCastDirectionColor;
+//					Gizmos.DrawLine(circ.origin, circ.origin + (circ.direction * circ.radius / 2f));
+//					Gizmos.DrawWireCube(circ.origin, Vector3.one * circ.radius * (contactPointRenderScale / 2f));
+//					Gizmos.DrawWireCube(circ.origin + (circ.direction * circ.radius * (contactPointRenderScale / 2f)),
+//									Vector3.one * circ.radius * (contactPointRenderScale / 4f));
 				}
 			}
 		}
@@ -92,61 +86,11 @@ namespace UnityEngine
 		{
 			_renderingCycleStarted = true;
 			yield return new WaitForEndOfFrame();
-			_circleGeometry.Clear ();
+			_geometry.Clear ();
 			_renderingCycleStarted = false;
 		}
 		
 		#endregion
-		
-		#region Shapecast Methods
-		
-		public static RaycastHit2D CircleCast(Vector2 origin, float radius, Vector2 direction, float distance = Mathf.Infinity)
-		{
-			RaycastHit2D hit = Physics2D.CircleCast (origin, radius, direction, distance);
-			CircleGeometry originGeometry = new CircleGeometry(origin, radius, direction);
-			_circleGeometry.Add (originGeometry);
 			
-			if(hit)
-			{
-				CircleGeometry endGeometry = new CircleGeometry(hit.point + (-direction * radius), radius, direction);
-				endGeometry.contactPoints.Add (hit.point);
-				_circleGeometry.Add (endGeometry);
-			}
-			
-//			if(distance > 0)
-//			{	
-//				if(distance == Mathf.Infinity)
-//				{
-//					Vector3 nextSphereOrigin = origin;
-//					int drawCount = 0;
-//					for(drawCount = 0; drawCount < _maxShapeDrawsPerCast ; drawCount++)
-//					{
-//						Vector3 directionXYZ = direction;
-//						nextSphereOrigin = nextSphereOrigin + (directionXYZ * radius);
-//						CircleGeometry nextGeometry = new CircleGeometry(nextSphereOrigin, radius, direction);
-//						_circleGeometry.Add(nextGeometry);
-//					}
-//				}
-//				else if(distance < Mathf.Infinity)
-//				{
-//					Vector3 nextSphereOrigin = origin;
-//					int drawCount = 0;
-//					int shapeDrawsThisCast = Mathf.RoundToInt (distance);
-//					for(drawCount = 0; drawCount < shapeDrawsThisCast ; drawCount++)
-//					{
-//						Vector3 directionXYZ = direction;
-//						nextSphereOrigin = nextSphereOrigin + (directionXYZ * radius);
-//						CircleGeometry nextGeometry = new CircleGeometry(nextSphereOrigin, radius, direction);
-//						_circleGeometry.Add(nextGeometry);
-//					}
-//				}
-//				
-//			}
-			return hit;
-		}
-		
-		#endregion
-		
-				
 	}
 }
