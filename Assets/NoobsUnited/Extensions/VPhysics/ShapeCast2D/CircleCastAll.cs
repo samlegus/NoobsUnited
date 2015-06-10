@@ -4,10 +4,11 @@ using NoobsUnited;
 
 namespace UnityEngine
 {
-	public partial class VPhysics2D
+	public partial class VPhysics2D : MonoBehaviour
 	{
 		public static RaycastHit2D[] CircleCastAll(Vector2 origin, float radius, Vector2 direction)
 		{
+			GenerateRenderer();
 			float distance = Mathf.Infinity;
 			RaycastHit2D[] hits = Physics2D.CircleCastAll (origin, radius, direction, distance);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
@@ -38,6 +39,7 @@ namespace UnityEngine
 		
 		public static RaycastHit2D[] CircleCastAll(Vector2 origin, float radius, Vector2 direction, float distance)
 		{
+			GenerateRenderer();
 			RaycastHit2D[] hits = Physics2D.CircleCastAll (origin, radius, direction, distance);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
 			Debug.Log (hits.Length);
@@ -67,6 +69,7 @@ namespace UnityEngine
 		
 		public static RaycastHit2D[] CircleCastAll(Vector2 origin, float radius, Vector2 direction, float distance, int layerMask)
 		{
+			GenerateRenderer();
 			RaycastHit2D[] hits = Physics2D.CircleCastAll (origin, radius, direction, distance);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
 			
@@ -96,6 +99,7 @@ namespace UnityEngine
 		
 		public static RaycastHit2D[] CircleCastAll(Vector2 origin, float radius, Vector2 direction, float distance, int layerMask, float minDepth)
 		{
+			GenerateRenderer();
 			RaycastHit2D[] hits = Physics2D.CircleCastAll (origin, radius, direction, distance);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
 			

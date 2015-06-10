@@ -24,6 +24,8 @@ namespace UnityEngine
 		private static Color _shapeCastColor = Color.white;
 		private static Color _hitPointColor = Color.yellow;
 		private static Color _shapeCastDirectionColor = Color.blue;
+
+		private static GameObject _gizmoRenderer;
 		
 		#endregion
 		
@@ -57,23 +59,6 @@ namespace UnityEngine
 				foreach(ShapecastGeometry shape in _geometry)
 				{
 					shape.Render ();
-//					//Draw CircleCasts
-//					Gizmos.color = _shapeCastColor;
-//					Gizmos.DrawWireSphere (circ.origin, circ.radius);
-//					
-//					//Draw the contact points for each valid RaycastHit2D
-//					Gizmos.color = _hitPointColor;
-//					foreach(Vector3 point in circ.contactPoints)
-//					{
-//						Gizmos.DrawWireSphere(point, circ.radius * contactPointRenderScale );
-//					}
-//					
-//					//Draw CircleCast direction indicators
-//					Gizmos.color = _shapeCastDirectionColor;
-//					Gizmos.DrawLine(circ.origin, circ.origin + (circ.direction * circ.radius / 2f));
-//					Gizmos.DrawWireCube(circ.origin, Vector3.one * circ.radius * (contactPointRenderScale / 2f));
-//					Gizmos.DrawWireCube(circ.origin + (circ.direction * circ.radius * (contactPointRenderScale / 2f)),
-//									Vector3.one * circ.radius * (contactPointRenderScale / 4f));
 				}
 			}
 		}
@@ -88,6 +73,18 @@ namespace UnityEngine
 			yield return new WaitForEndOfFrame();
 			_geometry.Clear ();
 			_renderingCycleStarted = false;
+		}
+
+		static void GenerateRenderer()
+		{
+			if(_gizmoRenderer)
+			{
+				return;
+			}
+
+			_gizmoRenderer = new GameObject();
+			_gizmoRenderer.name = "_VPhysicsRenderer";
+			_gizmoRenderer.AddComponent (typeof(VPhysics2D));
 		}
 		
 		#endregion
