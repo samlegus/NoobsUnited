@@ -5,13 +5,20 @@ using System.Collections;
 
 public partial class MonoBehaviourCreationWizard : EditorWindow
 {
-	public interface IStreamWritable
+	public abstract class StreamWritableScriptObject
 	{
-		void OnStreamWrite(System.IO.StreamWriter sw);
-		List<string> lines {get;set;}
+		public abstract void OnStreamWrite(System.IO.StreamWriter sw);
+		public List<string> lines {get;set;}
+
+		protected string comment = "";
+
+		public void SetComment(string comment)
+		{
+			this.comment = "//" + comment;
+		}
 	}
 
-	public class StreamWritableMethod : IStreamWritable
+	public class StreamWritableMethod : StreamWritableScriptObject
 	{
 		public StreamWritableMethod(string returnType, string name, params string[] namedArguments)
 		{
@@ -39,22 +46,24 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			lines.Add ("\t}");
 		}
 
-		public void OnStreamWrite(System.IO.StreamWriter sw)
+		public override void OnStreamWrite(System.IO.StreamWriter sw)
 		{
+			if(!System.String.IsNullOrEmpty (comment))
+			{
+				sw.WriteLine (comment);
+			}
 			foreach(string line in lines)
 			{
 				sw.WriteLine (line);
 			}
 		}
 
-		public List<string> lines {get;set;}
-
 		public string returnType {get;set;}
 		public string name {get;set;}
 		public string [] namedArguments {get;set;}
 	}
 
-	public class StreamWritableComponent : IStreamWritable 
+	public class StreamWritableComponent : StreamWritableScriptObject 
 	{
 		public StreamWritableComponent(string typeName, string propertyName)
 		{
@@ -66,7 +75,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			//this.lines.Add ("\t}");
 		}
 
-		public void OnStreamWrite(System.IO.StreamWriter sw)
+		public override void OnStreamWrite(System.IO.StreamWriter sw)
 		{
 			foreach(string s in lines)
 			{
@@ -75,10 +84,9 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		}
 
 		public string typeName {get;set;}
-		public List<string> lines {get;set;}
 	}
 
-	public class StreamWritableProperty : IStreamWritable 
+	public class StreamWritableProperty : StreamWritableScriptObject 
 	{
 		public StreamWritableProperty(string typeName, string propertyName, string propertyValue, bool isPrivate = false)
 		{
@@ -95,7 +103,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			//this.lines.Add ("\t}");
 		}
 		
-		public void OnStreamWrite(System.IO.StreamWriter sw)
+		public override void OnStreamWrite(System.IO.StreamWriter sw)
 		{
 			foreach(string s in lines)
 			{
@@ -107,6 +115,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		public string typeName {get;set;}
 		public string propertyValue {get;set;}
 		public string propertyName {get;set;}
-		public List<string> lines {get;set;}
+		//public List<string> lines {get;set;}
+		//public string comment {get;set;}
 	}
 }

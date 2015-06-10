@@ -14,10 +14,13 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 	static bool monoBehaviourMode = true;
 	static bool openScriptAfterCreation = true;
 	static bool enableCodeRegions = false;
+	static bool enableNoobComments = true;
 
 	static Dictionary<StreamWritableMethod, bool> potentialFunctions = new Dictionary<StreamWritableMethod, bool>();
 	static Dictionary<StreamWritableComponent, bool> potentialComponentReferences = new Dictionary<StreamWritableComponent, bool>();
 	static Dictionary<StreamWritableProperty, bool> potentialProperties = new Dictionary<StreamWritableProperty, bool>();
+	static Dictionary<StreamWritableScriptObject, string> potentialComments = new Dictionary<StreamWritableScriptObject, string>();
+	static Dictionary<string, bool> potentialCodeRegions = new Dictionary<string, bool>();
 
 	static UnityEngine.Object selectedObject;
 	static string defaultScriptDirectory = "Assets/MyGame/Scripts";
@@ -30,8 +33,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 	[MenuItem("Assets/Create/C# Script Creation Wizard")]
 	private static void OpenMonoWizardFromContextMenu()
 	{
-
-		window.position = new Rect(100, 100, 450, 450);
+		window.position = new Rect(100, 100, 450, 550);
 		window.title = "Script Wizard";
 		window.ShowPopup ();
 		selectedObject = Selection.activeObject;
@@ -50,7 +52,6 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		window.name = "Script Wizard";
 		window.position = new Rect(100, 100, 450, 450);
 		window.ShowPopup ();
-		AssetDatabase.Refresh ();
 		SetFilePathFromMenuBar();
 	}
 
@@ -62,12 +63,16 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 	
 	void OnGUI()
 	{
+		GUIStyle headerStyle = new GUIStyle();
+		headerStyle.fontStyle = FontStyle.Bold;
+		
 		if(potentialFunctions.Count == 0)
 		{
 			RefreshWrittenContent();
 		}
 
-		GUILayout.Label ("Script Mode: ");
+		GUILayout.Label ("");
+		GUILayout.Label (" Script Mode: ", headerStyle);
 		{
 			noobScriptMode = EditorGUILayout.Toggle("* NoobScript", !monoBehaviourMode);
 			monoBehaviourMode = EditorGUILayout.Toggle("* MonoBehaviour", !noobScriptMode);
@@ -75,13 +80,14 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 
 		GUILayout.Label ("");
 		{
-			scriptName = EditorGUILayout.TextField ("Script name:", scriptName);
+			GUILayout.Label (" Script Name: ", headerStyle);
+			scriptName = EditorGUILayout.TextField (scriptName);
 			GUILayout.Label ("* Name may have letters only.");
 		}
 
 		
 		GUILayout.Label("");
-		GUILayout.Label("Generate empty definitions for these events: ");
+		GUILayout.Label(" Generate empty function definitions for these events: ", headerStyle);
 		{
 			StreamWritableMethod[] methods = new StreamWritableMethod[potentialFunctions.Count];
 			potentialFunctions.Keys.CopyTo (methods, 0);
@@ -92,7 +98,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		}
 
 		GUILayout.Label("");
-		GUILayout.Label("Generate properties for: ");
+		GUILayout.Label(" Generate properties for: ", headerStyle);
 		{
 			StreamWritableComponent[] components = new StreamWritableComponent[potentialComponentReferences.Count];
 			potentialComponentReferences.Keys.CopyTo (components, 0);
@@ -110,11 +116,11 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		}
 
 		GUILayout.Label("");
-		GUILayout.Label("Other Options:");
-		enableCodeRegions = EditorGUILayout.Toggle ("* Generate code regions", enableCodeRegions);
+		GUILayout.Label(" Other Options:", headerStyle);
+		enableCodeRegions = EditorGUILayout.Toggle ("* Code regions", enableCodeRegions);
+		enableNoobComments = EditorGUILayout.Toggle ("* Noob comments", enableNoobComments); 
 		openScriptAfterCreation = EditorGUILayout.Toggle ("* Open after creation", openScriptAfterCreation);
-		
-		
+
 		if(GUILayout.Button ("Create"))			
 		{
 			bool scriptNameIsValid = true;
@@ -135,6 +141,14 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 				return;
 			}
 
+			if(System.String.IsNullOrEmpty(scriptName))
+			{
+				EditorUtility.DisplayDialog ("Invalid name",
+				                             "Please enter a valid name your script!",
+				                             "Okay");
+				return;
+			}
+
 			scriptFullFilePath = scriptDirectoryPath + "/" + scriptName + ".cs";
 
 			if(File.Exists (scriptFullFilePath))
@@ -151,36 +165,68 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			RefreshWrittenContent();
 		}
 
-
-		
+		GUILayout.Label ("");
+		GUILayout.Label ("Script being saved to: " + scriptFullFilePath);
 	}
+
 
 	static void RefreshWrittenContent()
 	{
 		potentialFunctions.Clear ();
-	
-		potentialFunctions.Add (new StreamWritableMethod("void", "Awake") , false);
-		potentialFunctions.Add (new StreamWritableMethod("void", "Start") , true);
-		potentialFunctions.Add (new StreamWritableMethod("void", "Update"), true);
-		potentialFunctions.Add (new StreamWritableMethod("void", "FixedUpdate"), false);
-		potentialFunctions.Add (new StreamWritableMethod("void", "OnCollisionEnter2D", "Collision2D other"), false);
-		potentialFunctions.Add (new StreamWritableMethod("void", "OnTriggerEnter2D", "Collider2D other"), false);	
+
+		StreamWritableMethod awake = new StreamWritableMethod("void", "Awake");
+		potentialFunctions.Add (awake , false);
+		potentialComments.Add (awake, "/*\tAwake is called first! It is commonly use to cache component references. */");
+
+		StreamWritableMethod start = new StreamWritableMethod("void", "Start");
+		potentialFunctions.Add (start , true);
+		potentialComments.Add(start, "/*\tStart is called right before the first frame. Useful for initialization logic. */");
+
+		StreamWritableMethod update = new StreamWritableMethod("void", "Update");
+		potentialFunctions.Add (update, true);
+		potentialComments.Add (update, "/*\tUpdate is called once EVERY frame. Most update logic goes here. */");
+
+		StreamWritableMethod fixedUpdate = new StreamWritableMethod("void", "FixedUpdate");
+		potentialFunctions.Add (fixedUpdate, false);
+		potentialComments.Add (fixedUpdate, "/*\tFixedUpdate is called every x seconds, where x is your project's Fixed Time Step." +
+		                       				System.Environment.NewLine + "\t\t- Any code that messes with Rigidbodies should go in here. */");
+
+		StreamWritableMethod onCollisionEnter2D = new StreamWritableMethod("void", "OnCollisionEnter2D", "Collision2D other");
+		potentialFunctions.Add (onCollisionEnter2D, false);
+		potentialComments.Add (onCollisionEnter2D, "/*\tOnCollisionEnter2D is called when this object touches another Collider2D." +
+		                        System.Environment.NewLine + "\t\t- It will not be called if the collider is marked as a trigger." +
+		                        System.Environment.NewLine + "\t\t- For moving collision to occur, this object must have a Collider2D AND a Rigidbody2D." +
+		                        System.Environment.NewLine + "\t\t- You can access information about what this object hit by using the \"other\" argument. */");
+
+		StreamWritableMethod onTriggerEnter2D = new StreamWritableMethod("void", "OnTriggerEnter2D", "Collider2D other");
+		potentialFunctions.Add (onTriggerEnter2D, false);	
+		potentialComments.Add (onTriggerEnter2D, "/*\tOnTriggerEnter2D is called when this object touches another Collider2D that is marked as a trigger." +
+		                       System.Environment.NewLine + "\t\t- It will not be called if the collider is NOT marked as a trigger." +
+		                       System.Environment.NewLine + "\t\t- For moving collision to occur, this object must have a Collider2D AND a Rigidbody2D." +
+		                       System.Environment.NewLine + "\t\t- You can access the collider this object touched by using the \"other\" argument. */");
 
 		potentialComponentReferences.Clear ();
-
-		potentialComponentReferences.Add (new StreamWritableComponent("Rigidbody2D" , "rigidbody2D"), false);
+		potentialComponentReferences.Add (new StreamWritableComponent("Rigidbody2D" , "rigidbody2d"), false);
 		potentialComponentReferences.Add (new StreamWritableComponent("SpriteRenderer", "spriteRenderer"), false);
-		potentialComponentReferences.Add (new StreamWritableComponent("Collider2D", "collider2D"), false);
+		potentialComponentReferences.Add (new StreamWritableComponent("Collider2D", "collider2d"), false);
 
 		potentialProperties.Clear ();
-		potentialProperties.Add (new StreamWritableProperty("GameObject", "self", "gameObject", true), true);
+		StreamWritableProperty self = new StreamWritableProperty("GameObject", "self", "gameObject", true);
+		potentialProperties.Add (self, true);
+		potentialComments.Add (self, "/*\tThis is the equivelant of the \"gameObject\" property, it's included for easy access and unwanted auto-completion.*/");
 	}
 
 
 
 	static void SetFilePathFromMenuBar()
 	{
-		scriptDirectoryPath = defaultScriptDirectory;
+		if(Directory.Exists (defaultScriptDirectory))
+		{
+			scriptDirectoryPath = defaultScriptDirectory;
+			return;
+		}
+
+		scriptDirectoryPath = Application.dataPath;
 	}
 
 	static void SetFilePathFromContextMenu()
@@ -189,16 +235,28 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		if(Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
 		{
 			scriptDirectoryPath = AssetDatabase.GetAssetPath (selectedObject);
+			return;
 		}
-		else if(AssetDatabase.GetAssetPath (selectedObject) != null && !Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
+		if(AssetDatabase.GetAssetPath (selectedObject) != null && !Directory.Exists (AssetDatabase.GetAssetPath (selectedObject )))
 		{
 			scriptDirectoryPath = AssetDatabase.GetAssetPath (selectedObject);
-			scriptDirectoryPath = scriptDirectoryPath.Substring (0, scriptDirectoryPath.LastIndexOf ("/") + 1);
+			//scriptDirectoryPath = scriptDirectoryPath.Substring (0, scriptDirectoryPath.LastIndexOf ("/") + 1);
+			return;
 		}
+		if(Directory.Exists (defaultScriptDirectory))
+		{
+			scriptDirectoryPath = defaultScriptDirectory;
+			return;
+		}
+
+		scriptDirectoryPath = Application.dataPath;
+
 	}
 	
 	static void WriteScript()
 	{
+		AssetDatabase.Refresh ();
+
 		StreamWriter sw = new StreamWriter(scriptFullFilePath);
 		
 		sw.WriteLine ("using UnityEngine;");
@@ -210,17 +268,8 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			sw.WriteLine("using NoobsUnited;");
 		}
 		
-		sw.WriteLine ("");
-		
-		if(noobScriptMode)
-		{
-			sw.WriteLine ("public class " + scriptName + " : NoobScript");
-		}
-		else
-		{
-			sw.WriteLine ("public class " + scriptName + " : MonoBehaviour");
-		}
-		
+		sw.WriteLine ();
+		sw.WriteLine ("public class " + scriptName + " : MonoBehaviour");
 		sw.WriteLine ("{");
 		
 		if(enableCodeRegions)
@@ -228,7 +277,8 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			sw.WriteLine ("\t#region Properties");
 			sw.WriteLine ();
 		}
-		else
+
+		if(potentialComponentReferences.Keys.Count > 0 && !enableCodeRegions)
 		{
 			sw.WriteLine ();
 		}
@@ -237,14 +287,22 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		{
 			if(potentialComponentReferences[comp])
 			{
+				if(enableNoobComments && potentialComments.ContainsKey (comp))
+				{
+					sw.WriteLine ("\t" + potentialComments [comp]);
+				}
 				comp.OnStreamWrite(sw);
 			}
 		}
-
+		
 		foreach(StreamWritableProperty prop in potentialProperties.Keys)
 		{
 			if(potentialProperties[prop])
 			{
+				if(enableNoobComments && potentialComments.ContainsKey (prop))
+				{
+					sw.WriteLine ("\t" + potentialComments[prop]);
+				}
 				prop.OnStreamWrite(sw);
 			}
 		}
@@ -266,6 +324,10 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			if(potentialFunctions[func])
 			{
 				sw.WriteLine ();
+				if(enableNoobComments && potentialFunctions.ContainsKey(func))
+				{
+					sw.WriteLine ("\t" + potentialComments[func]);
+				}
 				func.OnStreamWrite(sw);
 			}
 		}
