@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using NoobsUnited;
+using NoobsUnited.Swizzle;
 
 namespace UnityEngine
 {
@@ -16,17 +17,51 @@ namespace UnityEngine
 			if(hit)
 			{
 				originGeometry.contactPoints.Add (hit.point);
-				_geometry.Add (new LineGeometry(origin, hit.point));
+				
+				SphereGeometry contactSphere = new SphereGeometry(hit.centroid, radius, -direction);
+				contactSphere.color.a = .5f;
+				_geometry.Add (contactSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, contactSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, contactSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
+				
 			}
 			else
 			{
 				if(distance == Mathf.Infinity)
 				{
 					_geometry.Add (new LineGeometry(originGeometry.origin, originGeometry.origin + (Vector3)direction.normalized * maxShapeCastDistance));
+					
+					SphereGeometry endSphere = new SphereGeometry(origin + direction * maxShapeCastDistance, radius, -direction);
+					endSphere.color.a = .5f;
+					_geometry.Add (endSphere);
+					
+					LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+					directionIndicatorAbove.color.a = .3f;
+					_geometry.Add (directionIndicatorAbove);
+					
+					LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+					directionIndicatorBelow.color.a = .3f;
+					_geometry.Add (directionIndicatorBelow);
 				}
 				else if(distance != Mathf.Infinity && distance >= 0)
 				{
-					_geometry.Add (new LineGeometry(origin, originGeometry.origin + (Vector3)direction.normalized * distance));
+					SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+					endSphere.color.a = .5f;
+					_geometry.Add (endSphere);
+					
+					LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+					directionIndicatorAbove.color.a = .3f;
+					_geometry.Add (directionIndicatorAbove);
+					
+					LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+					directionIndicatorBelow.color.a = .3f;
+					_geometry.Add (directionIndicatorBelow);
 				}
 			}
 			
@@ -40,23 +75,34 @@ namespace UnityEngine
 			RaycastHit2D hit = Physics2D.CircleCast (origin, radius, direction, distance);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
 			
-			if(hit)
+			if(distance == Mathf.Infinity)
 			{
-				originGeometry.contactPoints.Add (hit.point);
-				_geometry.Add (new LineGeometry(origin, hit.point));
+				SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+				endSphere.color.a = .5f;
+				_geometry.Add (endSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
 			}
-			else
+			else if(distance != Mathf.Infinity && distance >= 0)
 			{
-				if(distance == Mathf.Infinity)
-				{
-					_geometry.Add (new LineGeometry(originGeometry.origin, originGeometry.origin + (Vector3)direction.normalized * maxShapeCastDistance));
-				}
-				else if(distance != Mathf.Infinity && distance >= 0)
-				{
-					_geometry.Add (new LineGeometry(origin, originGeometry.origin + (Vector3)direction.normalized * distance));
-				}
+				SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+				endSphere.color.a = .5f;
+				_geometry.Add (endSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
 			}
-			
 			_geometry.Add(originGeometry);
 			return hit;
 		}
@@ -67,21 +113,33 @@ namespace UnityEngine
 			RaycastHit2D hit = Physics2D.CircleCast (origin, radius, direction, distance, layerMask);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
 			
-			if(hit)
+			if(distance == Mathf.Infinity)
 			{
-				originGeometry.contactPoints.Add (hit.point);
-				_geometry.Add (new LineGeometry(origin, hit.point));
+				SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+				endSphere.color.a = .5f;
+				_geometry.Add (endSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
 			}
-			else
+			else if(distance != Mathf.Infinity && distance >= 0)
 			{
-				if(distance == Mathf.Infinity)
-				{
-					_geometry.Add (new LineGeometry(originGeometry.origin, originGeometry.origin + (Vector3)direction.normalized * maxShapeCastDistance));
-				}
-				else if(distance != Mathf.Infinity && distance >= 0)
-				{
-					_geometry.Add (new LineGeometry(origin, originGeometry.origin + (Vector3)direction.normalized * distance));
-				}
+				SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+				endSphere.color.a = .5f;
+				_geometry.Add (endSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
 			}
 			
 			_geometry.Add(originGeometry);
@@ -94,21 +152,33 @@ namespace UnityEngine
 			RaycastHit2D hit = Physics2D.CircleCast (origin, radius, direction, distance, layerMask, minDepth);
 			SphereGeometry originGeometry = new SphereGeometry(origin, radius, direction);
 			
-			if(hit)
+			if(distance == Mathf.Infinity)
 			{
-				originGeometry.contactPoints.Add (hit.point);
-				_geometry.Add (new LineGeometry(origin, hit.point));
+				SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+				endSphere.color.a = .5f;
+				_geometry.Add (endSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
 			}
-			else
+			else if(distance != Mathf.Infinity && distance >= 0)
 			{
-				if(distance == Mathf.Infinity)
-				{
-					_geometry.Add (new LineGeometry(originGeometry.origin, originGeometry.origin + (Vector3)direction.normalized * maxShapeCastDistance));
-				}
-				else if(distance != Mathf.Infinity && distance >= 0)
-				{
-					_geometry.Add (new LineGeometry(origin, originGeometry.origin + (Vector3)direction.normalized * distance));
-				}
+				SphereGeometry endSphere = new SphereGeometry(origin + direction * distance, radius, -direction);
+				endSphere.color.a = .5f;
+				_geometry.Add (endSphere);
+				
+				LineGeometry directionIndicatorAbove = new LineGeometry(origin + Vector2.up * radius, endSphere.origin.xy() + Vector2.up * radius);
+				directionIndicatorAbove.color.a = .3f;
+				_geometry.Add (directionIndicatorAbove);
+				
+				LineGeometry directionIndicatorBelow = new LineGeometry(origin - Vector2.up * radius, endSphere.origin.xy() - Vector2.up * radius);
+				directionIndicatorBelow.color.a = .3f;
+				_geometry.Add (directionIndicatorBelow);
 			}
 			
 			_geometry.Add(originGeometry);
