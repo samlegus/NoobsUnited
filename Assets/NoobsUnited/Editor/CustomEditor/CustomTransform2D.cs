@@ -30,7 +30,7 @@ public class TransformInspector : Editor
 			scale = EditorGUILayout.Vector2Field("Scale", scale);
 			scale.z = oldScale.z;
 
-			eulerAngles = new Vector3(0,0,EditorGUILayout.FloatField("Rotation (Degrees)", eulerAngles.z));
+			eulerAngles = new Vector3(oldScale.x, oldScale.y, EditorGUILayout.FloatField("Rotation (Degrees)", eulerAngles.z));
 			eulerAngles.x = oldScale.x;
 			eulerAngles.y = oldScale.y;
 
@@ -68,19 +68,6 @@ public class TransformInspector : Editor
 		if (float.IsNaN(v.z))
 		{
 			v.z = 0;
-		}
-		return v;
-	}
-
-	private Vector3 FixIfNaN(Vector2 v)
-	{
-		if (float.IsNaN(v.x))
-		{
-			v.x = 0;
-		}
-		if (float.IsNaN(v.y))
-		{
-			v.y = 0;
 		}
 		return v;
 	}
