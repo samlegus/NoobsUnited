@@ -8,8 +8,7 @@ namespace UnityEngine
 	public partial class VPhysics2D : MonoBehaviour
 	{
 		#region Inspector
-		
-		//public static int maxShapeDrawsPerCast = 40;
+
 		public static float maxShapeCastDistance = 1000f;
 		public static bool renderGeometry = true;
 		public static float contactPointRenderScale = .25f;
@@ -21,32 +20,12 @@ namespace UnityEngine
 		private static List<ShapecastGeometry> _geometry = new List<ShapecastGeometry>();
 		
 		private static bool _renderingCycleStarted = false;
-		private static Color _shapeCastColor = Color.white;
-		private static Color _hitPointColor = Color.yellow;
-		private static Color _shapeCastDirectionColor = Color.blue;
-
 		private static GameObject _gizmoRenderer;
 		
 		#endregion
 		
 		#region Unity Events
-		
-		void Test()
-		{
-			Debug.Log("Test!");
-		}
-		
-		void Awake()
-		{
-			
-		}
-		
-		
-		void OnGUI()
-		{
-			
-		}
-		
+
 		void OnDrawGizmos()
 		{
 			if(!_renderingCycleStarted)

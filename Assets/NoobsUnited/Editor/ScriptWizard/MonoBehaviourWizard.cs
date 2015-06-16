@@ -10,17 +10,16 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 	static string scriptDirectoryPath = "";
 	static string scriptFullFilePath = "";
 	
-	static bool noobScriptMode = false;
 	static bool monoBehaviourMode = true;
 	static bool openScriptAfterCreation = true;
-	static bool enableCodeRegions = false;
+	static bool enableCodeRegions = true;
 	static bool enableNoobComments = true;
 
 	static Dictionary<StreamWritableMethod, bool> potentialFunctions = new Dictionary<StreamWritableMethod, bool>();
 	static Dictionary<StreamWritableComponent, bool> potentialComponentReferences = new Dictionary<StreamWritableComponent, bool>();
 	static Dictionary<StreamWritableProperty, bool> potentialProperties = new Dictionary<StreamWritableProperty, bool>();
 	static Dictionary<StreamWritableScriptObject, string> potentialComments = new Dictionary<StreamWritableScriptObject, string>();
-	static Dictionary<string, bool> potentialCodeRegions = new Dictionary<string, bool>();
+	//static Dictionary<string, bool> potentialCodeRegions = new Dictionary<string, bool>();
 
 	static UnityEngine.Object selectedObject;
 	static string defaultScriptDirectory = "Assets/MyGame/Scripts";
@@ -60,7 +59,9 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 	{
 		return Directory.Exists (defaultScriptDirectory);
 	}
-	
+
+	bool init = false;
+
 	void OnGUI()
 	{
 		GUIStyle headerStyle = new GUIStyle();
@@ -74,8 +75,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		GUILayout.Label ("");
 		GUILayout.Label (" Script Mode: ", headerStyle);
 		{
-			noobScriptMode = EditorGUILayout.Toggle("* NoobScript", !monoBehaviourMode);
-			monoBehaviourMode = EditorGUILayout.Toggle("* MonoBehaviour", !noobScriptMode);
+			monoBehaviourMode = EditorGUILayout.Toggle("* MonoBehaviour", monoBehaviourMode);
 		}
 
 		GUILayout.Label ("");
@@ -206,9 +206,17 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		                       System.Environment.NewLine + "\t\t- You can access the collider this object touched by using the \"other\" argument. */");
 
 		potentialComponentReferences.Clear ();
-		potentialComponentReferences.Add (new StreamWritableComponent("Rigidbody2D" , "rigidbody2d"), false);
-		potentialComponentReferences.Add (new StreamWritableComponent("SpriteRenderer", "spriteRenderer"), false);
-		potentialComponentReferences.Add (new StreamWritableComponent("Collider2D", "collider2d"), false);
+		StreamWritableComponent rb2D = new StreamWritableComponent("Rigidbody2D" , "rigidbody2d");
+		potentialComments.Add (rb2D, "/*\tRigidbody2D allows and controls 2D Physics simulation.*/");
+		potentialComponentReferences.Add (rb2D, false);
+
+		StreamWritableComponent sr = new StreamWritableComponent("SpriteRenderer", "spriteRenderer");
+		potentialComments.Add (sr, "/*\tSpriteRenderer allows and controls typical image(jpg, png etc) representation.*/");
+		potentialComponentReferences.Add (sr, false);
+
+		StreamWritableComponent collider = new StreamWritableComponent("Collider2D", "collider2d");
+		potentialComments.Add (collider, "/*\tCollider2D allows other objects to collide with this object.*/");
+		potentialComponentReferences.Add (collider, false);
 
 		potentialProperties.Clear ();
 		StreamWritableProperty self = new StreamWritableProperty("GameObject", "self", "gameObject", true);
@@ -252,7 +260,9 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		scriptDirectoryPath = Application.dataPath;
 
 	}
-	
+
+
+
 	static void WriteScript()
 	{
 		AssetDatabase.Refresh ();
@@ -262,25 +272,53 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		sw.WriteLine ("using UnityEngine;");
 		sw.WriteLine ("using UnityEngine.UI;");
 		sw.WriteLine ("using System.Collections;");
-		
-		if(noobScriptMode)
-		{
-			sw.WriteLine("using NoobsUnited;");
-		}
-		
+		sw.WriteLine ("using NoobsUnited;");
+		sw.WriteLine ("using NoobsUnited.Noob2D;");
+
 		sw.WriteLine ();
 		sw.WriteLine ("public class " + scriptName + " : MonoBehaviour");
 		sw.WriteLine ("{");
 		
 		if(enableCodeRegions)
 		{
-			sw.WriteLine ("\t#region Properties");
+			sw.WriteLine ("\t#region Public Variables");
 			sw.WriteLine ();
+			sw.WriteLine ("\t#endregion");
+			sw.WriteLine ();
+			sw.WriteLine ("\t#region Private Variables");
+			sw.WriteLine ();
+			sw.WriteLine ("\t#endregion");
+			sw.WriteLine ();
+			sw.WriteLine ("\t#region Unity Events");
 		}
 
-		if(potentialComponentReferences.Keys.Count > 0 && !enableCodeRegions)
+		foreach(StreamWritableMethod func in potentialFunctions.Keys)
 		{
+			if(potentialFunctions[func])
+			{
+				sw.WriteLine ();
+				if(enableNoobComments && potentialFunctions.ContainsKey(func))
+				{
+					sw.WriteLine ("\t" + potentialComments[func]);
+				}
+				func.OnStreamWrite(sw);
+			}
+		}
+
+		if(enableCodeRegions)
+		{
+			if(potentialFunctions.Keys.Count > 0)
+			{
+				sw.WriteLine ();
+			}
+
+			sw.WriteLine ("\t#endregion");
 			sw.WriteLine ();
+			sw.WriteLine ("\t#region Properties");
+			if(potentialComponentReferences.Keys.Count > 0)
+			{
+				sw.WriteLine ();
+			}
 		}
 
 		foreach(StreamWritableComponent comp in potentialComponentReferences.Keys)
@@ -306,34 +344,13 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 				prop.OnStreamWrite(sw);
 			}
 		}
-
+		
 		if(enableCodeRegions)
 		{
-			sw.WriteLine ();
-			sw.WriteLine ("\t#endregion");
-		}
-
-		if(enableCodeRegions)
-		{
-			sw.WriteLine ();
-			sw.WriteLine ("\t#region Unity Events");
-		}
-
-		foreach(StreamWritableMethod func in potentialFunctions.Keys)
-		{
-			if(potentialFunctions[func])
+			if(potentialComponentReferences.Keys.Count > 0 || potentialProperties.Keys.Count > 0)
 			{
 				sw.WriteLine ();
-				if(enableNoobComments && potentialFunctions.ContainsKey(func))
-				{
-					sw.WriteLine ("\t" + potentialComments[func]);
-				}
-				func.OnStreamWrite(sw);
 			}
-		}
-		if(enableCodeRegions)
-		{
-			sw.WriteLine ();
 			sw.WriteLine ("\t#endregion");
 		}
 				
@@ -360,7 +377,10 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		AssetDatabase.Refresh ();
 		MonoScript script = AssetDatabase.LoadAssetAtPath (scriptFullFilePath, typeof(MonoScript)) as MonoScript;
 		Selection.activeObject = script;
-		AssetDatabase.OpenAsset (script);
+		if(openScriptAfterCreation)
+		{
+			AssetDatabase.OpenAsset (script);
+		}
 	}
 	
 }
