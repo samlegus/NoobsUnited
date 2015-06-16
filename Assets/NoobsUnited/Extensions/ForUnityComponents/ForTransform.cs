@@ -11,12 +11,34 @@ namespace NoobsUnited
 			{
 				t.Translate(x,y,0);
 			}
-			
+
+			public static void Move(this Transform t, float x, float y)
+			{
+				t.Translate ( new Vector2(x, y) * Time.deltaTime);
+			}
+
+			public static void Move(this Transform t, Vector2 translation)
+			{
+				t.Translate ( translation * Time.deltaTime);
+			}
+
 			public static void Rotate2D(this Transform t, float degrees)
 			{
 				t.Rotate( Vector3.forward, degrees);
 			}
-			
+
+			public static void Rotate2D(this Transform t, float degrees, bool clockwise)
+			{
+				if(clockwise)
+				{
+					t.Rotate( Vector3.forward, degrees);
+				}
+				else
+				{
+					t.Rotate( -Vector3.forward, degrees);
+				}
+			}
+
 			public static void RotateAround2D(this Transform t, float posX, float posY, float degrees)
 			{
 				float posZ = t.position.z;
