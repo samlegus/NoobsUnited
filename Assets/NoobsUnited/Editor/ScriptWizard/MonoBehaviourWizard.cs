@@ -36,6 +36,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		window.title = "Script Wizard";
 		window.ShowPopup ();
 		selectedObject = Selection.activeObject;
+		RefreshWrittenContent();
 		SetFilePathFromContextMenu();
 	}
 
@@ -51,6 +52,7 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		window.name = "Script Wizard";
 		window.position = new Rect(100, 100, 450, 450);
 		window.ShowPopup ();
+		RefreshWrittenContent();
 		SetFilePathFromMenuBar();
 	}
 
@@ -60,17 +62,11 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 		return Directory.Exists (defaultScriptDirectory);
 	}
 
-	bool init = false;
-
+	
 	void OnGUI()
 	{
 		GUIStyle headerStyle = new GUIStyle();
 		headerStyle.fontStyle = FontStyle.Bold;
-		
-		if(potentialFunctions.Count == 0)
-		{
-			RefreshWrittenContent();
-		}
 
 		GUILayout.Label ("");
 		GUILayout.Label (" Script Mode: ", headerStyle);
