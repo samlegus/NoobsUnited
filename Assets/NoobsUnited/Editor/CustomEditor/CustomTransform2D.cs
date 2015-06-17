@@ -31,8 +31,8 @@ public class TransformInspector : Editor
 			scale.z = oldScale.z;
 
 			eulerAngles = new Vector3(oldScale.x, oldScale.y, EditorGUILayout.FloatField("Rotation (Degrees)", eulerAngles.z));
-			eulerAngles.x = oldScale.x;
-			eulerAngles.y = oldScale.y;
+			eulerAngles.x = oldEulerAngles.x;
+			eulerAngles.y = oldEulerAngles.y;
 
 		}
 		else

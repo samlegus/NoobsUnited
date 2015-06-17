@@ -160,9 +160,6 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 			FinishScriptCreation ();
 			RefreshWrittenContent();
 		}
-
-		GUILayout.Label ("");
-		GUILayout.Label ("Script being saved to: " + scriptFullFilePath);
 	}
 
 
@@ -189,18 +186,16 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 
 		StreamWritableMethod onCollisionEnter2D = new StreamWritableMethod("void", "OnCollisionEnter2D", "Collision2D other");
 		potentialFunctions.Add (onCollisionEnter2D, false);
-		potentialComments.Add (onCollisionEnter2D, "/*\tOnCollisionEnter2D is called when this object touches another Collider2D." +
-		                        System.Environment.NewLine + "\t\t- It will not be called if the collider is marked as a trigger." +
-		                        System.Environment.NewLine + "\t\t- For moving collision to occur, this object must have a Collider2D AND a Rigidbody2D." +
-		                        System.Environment.NewLine + "\t\t- You can access information about what this object hit by using the \"other\" argument. */");
+		potentialComments.Add (onCollisionEnter2D, "/*\tOnCollisionEnter2D is called when this object touches another's Collider2D." +
+		                        System.Environment.NewLine + "\t\t- You can access information about what was hit by using other.gameObject.someVariableNameHere" +
+		                       	System.Environment.NewLine + "\t\t- Will not be called if this object enters a trigger. */");
 
 		StreamWritableMethod onTriggerEnter2D = new StreamWritableMethod("void", "OnTriggerEnter2D", "Collider2D other");
 		potentialFunctions.Add (onTriggerEnter2D, false);	
 		potentialComments.Add (onTriggerEnter2D, "/*\tOnTriggerEnter2D is called when this object touches another Collider2D that is marked as a trigger." +
-		                       System.Environment.NewLine + "\t\t- It will not be called if the collider is NOT marked as a trigger." +
-		                       System.Environment.NewLine + "\t\t- For moving collision to occur, this object must have a Collider2D AND a Rigidbody2D." +
-		                       System.Environment.NewLine + "\t\t- You can access the collider this object touched by using the \"other\" argument. */");
-
+		                       System.Environment.NewLine + "\t\t- You can access information about what was hit by using other.gameObject.someVariableNameHere" +
+		                       System.Environment.NewLine + "\t\t- Will not be called if this object enters a non-trigger. */");
+		
 		potentialComponentReferences.Clear ();
 		StreamWritableComponent rb2D = new StreamWritableComponent("Rigidbody2D" , "rigidbody2d");
 		potentialComments.Add (rb2D, "/*\tRigidbody2D allows and controls 2D Physics simulation.*/");
@@ -308,6 +303,10 @@ public partial class MonoBehaviourCreationWizard : EditorWindow
 				sw.WriteLine ();
 			}
 
+			sw.WriteLine ("\t#endregion");
+			sw.WriteLine ();
+			sw.WriteLine ("\t#region My Functions");
+			sw.WriteLine ();
 			sw.WriteLine ("\t#endregion");
 			sw.WriteLine ();
 			sw.WriteLine ("\t#region Properties");
