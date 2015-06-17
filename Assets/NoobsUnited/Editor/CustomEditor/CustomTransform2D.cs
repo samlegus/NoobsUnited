@@ -11,7 +11,7 @@ public class TransformInspector : Editor
 	{		
 		Transform t = (Transform)target;
 
-		Vector3 position = t.position;
+		Vector3 localPosition = t.localPosition;
 		Vector3 eulerAngles = t.localEulerAngles;
 		Vector3 scale = t.localScale;
 
@@ -20,12 +20,24 @@ public class TransformInspector : Editor
 			// Replicate the standard transform inspector gui
 			EditorGUI.indentLevel = 0;
 
-			Vector3 oldPos = position;
+
+			Vector3 oldLocalPos = localPosition;
 			Vector3 oldEulerAngles = eulerAngles;
 			Vector3 oldScale = scale;
-
-			position = EditorGUILayout.Vector2Field("Position", position);
-			position.z = oldPos.z;
+			
+			if(t.parent)
+			{
+				localPosition = EditorGUILayout.Vector2Field("Local Position", localPosition);
+				localPosition.z = oldLocalPos.z;
+				EditorGUI.indentLevel = 1;
+				EditorGUILayout.LabelField ("Parent name: " + t.parent.name + " (" + t.parent.position.x + " , " + t.parent.position.y + " )");
+				EditorGUI.indentLevel = 0;
+			}
+			else
+			{
+				localPosition = EditorGUILayout.Vector2Field("World Position", localPosition);
+				localPosition.z = oldLocalPos.z;
+			}
 
 			scale = EditorGUILayout.Vector2Field("Scale", scale);
 			scale.z = oldScale.z;
@@ -38,16 +50,16 @@ public class TransformInspector : Editor
 		else
 		{
 			EditorGUI.indentLevel = 0;
-			position = EditorGUILayout.Vector3Field("Position", position);
+			localPosition = EditorGUILayout.Vector3Field("Local Position", localPosition);
 			eulerAngles = EditorGUILayout.Vector3Field("Rotation", eulerAngles);
-			scale = EditorGUILayout.Vector3Field("Scale", scale);;
+			scale = EditorGUILayout.Vector3Field("Scale", scale);
 		}
 
 		if (GUI.changed)
 		{
 			Undo.RecordObject(t, "Transform Change");
-			
-			t.localPosition = FixIfNaN(position);
+		
+			t.localPosition = FixIfNaN(localPosition);
 			t.localEulerAngles = FixIfNaN(eulerAngles);
 			t.localScale = FixIfNaN(scale);
 		}

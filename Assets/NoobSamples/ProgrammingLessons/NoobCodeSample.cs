@@ -4,11 +4,9 @@ using System.Collections;
 using NoobsUnited;
 using NoobsUnited.Noob2D;
 
-public class EnemyHealth : MonoBehaviour
+public class VariableExample : MonoBehaviour
 {
 	#region Public Variables
-
-	public float health = 10;
 
 	#endregion
 
@@ -21,23 +19,17 @@ public class EnemyHealth : MonoBehaviour
 	/*	Update is called once EVERY frame. Most update logic goes here. */
 	void Update()
 	{
-		if(health <= 0)
-		{
-			Destroy (self);
-		}
+
 	}
 
-	void OnDamage(float damage)
-	{
-		health -= damage;
-	}
+	#endregion
+
+	#region My Functions
 
 	#endregion
 
 	#region Properties
 
-	/*	This is the equivelant of the "gameObject" property, it's included for easy access and unwanted auto-completion.*/
-	private GameObject self { get { return gameObject;} }
 
 	#endregion
 }

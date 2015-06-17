@@ -54,8 +54,6 @@ public class BasicInput : MonoBehaviour
 		{
 			transform.Rotate2D (5f);
 		}
-		
-		
 	}
 
 	#endregion
