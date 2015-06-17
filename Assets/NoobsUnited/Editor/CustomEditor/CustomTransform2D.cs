@@ -64,7 +64,7 @@ public class TransformInspector : Editor
 			t.localScale = FixIfNaN(scale);
 		}
 
-		showDefault = EditorGUILayout.Toggle ("3D Mode", showDefault);
+		showDefault = EditorGUILayout.Toggle ("Classic Mode", showDefault);
 	}
 	
 	private Vector3 FixIfNaN(Vector3 v)

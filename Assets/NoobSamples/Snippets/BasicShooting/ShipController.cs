@@ -59,13 +59,15 @@ public class ShipController : MonoBehaviour
 		self.transform.Move (horizontalMovement, verticalMovement);
 	}
 
-
 	#endregion
-
+	
 	#region Properties
 	
+	Rigidbody2D rigidbody2d { get { return gameObject.GetComponent<Rigidbody2D>(); } }
 	/*	This is the equivelant of the "gameObject" property, it's included for easy access and unwanted auto-completion.*/
 	private GameObject self { get { return gameObject;} }
 	
 	#endregion
+
+
 }
