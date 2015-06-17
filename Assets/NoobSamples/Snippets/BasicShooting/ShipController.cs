@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using NoobsUnited;
 using NoobsUnited.Noob2D;
 
-public class Ship : MonoBehaviour
+public class ShipController : MonoBehaviour
 {
 	#region Public Variables
 
@@ -21,7 +22,7 @@ public class Ship : MonoBehaviour
 		bool shouldShoot = Input.GetButtonDown ("Fire1");
 		if(shouldShoot == true)
 		{
-			this.Clone (bulletPrefab, self.transform.position, self.transform.rotation, true);
+			this.Clone(bulletPrefab, self.transform.position, self.transform.rotation, true);
 		}
 
 		//Movement

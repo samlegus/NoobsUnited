@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using NoobsUnited.Noob2D;
 
-public class RawMovement : MonoBehaviour
+public class StandardMovement : MonoBehaviour
 {
 	#region Properties
 
@@ -25,7 +25,7 @@ public class RawMovement : MonoBehaviour
 	{
 		float horizontalMovement = Input.GetAxisRaw ("Horizontal") * speed;
 		float verticalMovement = Input.GetAxisRaw ("Vertical") * speed;
-
+		
 		self.transform.Move (horizontalMovement, verticalMovement);
 	}
 

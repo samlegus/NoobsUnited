@@ -4,7 +4,7 @@ using System.Collections;
 using NoobsUnited;
 using NoobsUnited.Noob2D;
 
-public class Health : MonoBehaviour
+public class EnemyHealth : MonoBehaviour
 {
 	#region Public Variables
 
@@ -27,16 +27,9 @@ public class Health : MonoBehaviour
 		}
 	}
 
-	/*	OnCollisionEnter2D is called when this object touches another Collider2D.
-		- It will not be called if the collider is marked as a trigger.
-		- For moving collision to occur, this object must have a Collider2D AND a Rigidbody2D.
-		- You can access information about what this object hit by using the "other" argument. */
-	void OnCollisionEnter2D(Collision2D other)
+	void OnDamage(int damage)
 	{
-		if(other.gameObject.tag == "Bullet")
-		{
-			health--;
-		}
+		health -= damage;
 	}
 
 	#endregion
