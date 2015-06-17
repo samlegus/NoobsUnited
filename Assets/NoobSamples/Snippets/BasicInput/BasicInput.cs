@@ -5,36 +5,65 @@ using NoobsUnited.Noob2D;
 
 public class BasicInput : MonoBehaviour
 {
-	#region Properties
 
-	/*	This is the equivelant of the "gameObject" property, it's included for easy access and unwanted auto-completion.*/
-	private GameObject self { get { return gameObject;} }
+	#region Public Variables
+	
+	public KeyCode upKey;
+	public KeyCode downKey;
+	public KeyCode leftKey;
+	public KeyCode rightKey;
+	
+	public float speed;
 
 	#endregion
-
+	
 	#region Unity Events
 
 	/*	Update is called once EVERY frame. Most update logic goes here. */
 	void Update()
 	{
-		//When we press the space bar, teleport our object to 0,0
-		if(Input.GetKeyDown (KeyCode.Space))
+		//Input.GetKey() is a function that returns a bool. It returns true if the key is held, false if it is not.
+		//We can store the value of Input.GetKey() in a boolean variable and give that variable a name that makes sense.
+		
+		bool moveLeft = Input.GetKey(leftKey);
+		bool moveRight = Input.GetKey (rightKey);
+		bool moveUp = Input.GetKey (upKey);
+		bool moveDown = Input.GetKey (downKey);
+		
+		if(moveLeft == true)
 		{
-			self.transform.SetPosition (0f,0f);
+			self.transform.Move (-speed, 0f);
 		}
-
-		//When we HOLD q, move our object forward.
-		if(Input.GetKey(KeyCode.Q))
+		if(moveRight == true)
 		{
-			self.transform.Move (10f, 0);
+			self.transform.Move (speed, 0f);
 		}
-
-		//When we hold the left mouse button, rotate our object 5 degrees
-		if(Input.GetMouseButton(0))
+		if(moveUp == true)
 		{
-			self.transform.Rotate2D (5f);
+			self.transform.Move (0f, speed);
 		}
+		if(moveDown == true)
+		{
+			self.transform.Move (0f, -speed);
+		}
+		
+		//Input.GetMouseButtonDown() works the same way as GetKey except it takes an int. 0 = left mb, 1 = right mb, 2 = middle mb
+		bool rotateClockwise = Input.GetMouseButton (0);
+		
+		if(rotateClockwise == true)
+		{
+			transform.Rotate2D (5f);
+		}
+		
+		
 	}
 
+	#endregion
+	
+	#region Properties
+	
+	/*	This is the equivelant of the "gameObject" property, it's included for easy access and unwanted auto-completion.*/
+	private GameObject self { get { return gameObject;} }
+	
 	#endregion
 }
